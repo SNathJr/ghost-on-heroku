@@ -10,7 +10,8 @@
   "private": true,
   "version": "2.27.0",
   "dependencies": {
-    "casper": "github:tryghost/Casper#2.10.6",
+    "casper": "github:tryghost/Casper",
+    "casper-dark": "github:dlford/Casper-Dark",
     "ghost": "2.27.0",
     "ghost-storage-adapter-s3": "^2.8.0",
     "ghost-storage-cloudinary": "^1.1.4",
