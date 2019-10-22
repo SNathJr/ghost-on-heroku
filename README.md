@@ -1,4 +1,4 @@
-# [Ghost 2.X](https://github.com/TryGhost/Ghost) on [Heroku](http://heroku.com)
+# [Ghost 3.X](https://github.com/TryGhost/Ghost) on [Heroku](http://heroku.com)
 
 Ghost is a free, open, simple blogging platform. Visit the project's website at <http://ghost.org>, or read the docs on <http://support.ghost.org>.
 
@@ -8,17 +8,17 @@ Ghost is a free, open, simple blogging platform. Visit the project's website at 
 
 ## Disclaimer
 
-This is a fork with some improvements from https://github.com/cobyism/ghost-on-heroku. I have forked and improved this repository as the original developer seemed to have abandoned his repo recently. In this repository I have upgraded ghost to ghost 2.X and added cloudinary as a free storage alternative to amazon's s3. If you are still interested with the ghost 1.0 version please visit the original repository.
+This is a fork with some improvements from https://github.com/cobyism/ghost-on-heroku. I have forked and improved this repository as the original developer seemed to have abandoned his repo recently. In this repository I have upgraded ghost to ghost 3.X and added cloudinary as a free storage alternative to amazon's s3. If you are still interested with the ghost 1.0 version please visit the original repository.
 
-## Ghost version 2.X
+## Ghost version 3.X
 
 The latest release of Ghost is now supported! Changes include:
 
-  * Requires MySQL database, available through either of two add-ons:
-    * [JawsDB](https://elements.heroku.com/addons/jawsdb) (deploy default)
-    * [ClearDB](https://elements.heroku.com/addons/cleardb)
-  * `PUBLIC_URL` config var renamed to `APP_PUBLIC_URL` to give it alphabetical precedence
-  * The app is configured to use `Cloudinary File Storage` by default.
+- Requires MySQL database, available through either of two add-ons:
+  - [JawsDB](https://elements.heroku.com/addons/jawsdb) (deploy default)
+  - [ClearDB](https://elements.heroku.com/addons/cleardb)
+- `PUBLIC_URL` config var renamed to `APP_PUBLIC_URL` to give it alphabetical precedence
+- The app is configured to use `Cloudinary File Storage` by default.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
@@ -31,6 +31,7 @@ The following video is a step by step tutorial:
 ### Things you should know
 
 After deployment,
+
 - First, visit Ghost at `https://YOURAPPNAME.herokuapp.com/ghost` to set up your admin account
 - The app may take a few minutes to come to life
 - Your blog will be publicly accessible at `https://YOURAPPNAME.herokuapp.com`
@@ -43,8 +44,8 @@ After deployment,
 
 If your Ghost app needs to support substantial traffic, then use a CDN add-on:
 
-  * [Fastly](https://elements.heroku.com/addons/fastly)
-  * [Edge](https://elements.heroku.com/addons/edge).
+- [Fastly](https://elements.heroku.com/addons/fastly)
+- [Edge](https://elements.heroku.com/addons/edge).
 
 #### Configuring S3 file uploads
 
@@ -56,14 +57,14 @@ The blog is configured to use Cloudinary file storage by default. If you want to
 
 - `S3_BUCKET_REGION`: **Required if using S3 uploads**. Specify the region the bucket has been created in, using slug format (e.g. `us-east-1`, `eu-west-1`). A full list of S3 regions is [available here](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region).
 
-- `S3_ASSET_HOST_URL`: Optional, even if using S3 uploads. Use this variable to specify the S3 bucket URL in virtual host style, path style or using a custom domain. You should also include a trailing slash (example `https://my.custom.domain/`).  See [this page](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html) for details.
+- `S3_ASSET_HOST_URL`: Optional, even if using S3 uploads. Use this variable to specify the S3 bucket URL in virtual host style, path style or using a custom domain. You should also include a trailing slash (example `https://my.custom.domain/`). See [this page](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html) for details.
 
 Once your app is up and running with these variables in place, you should be able to upload images via the Ghost interface and they’ll be stored in Amazon S3. :sparkles:
 
 ##### Provisioning an S3 bucket using an add-on
 
 If you’d prefer not to configure S3 manually, you can provision the [Bucketeer add-on](https://devcenter.heroku.com/articles/bucketeer)
-to get an S3 bucket (Bucketeer starts at $5/mo).
+to get an S3 bucket (Bucketeer starts at \$5/mo).
 
 To configure S3 via Bucketeer, leave all the S3 deployment fields blank and deploy your
 Ghost blog. Once your blog is deployed, run the following commands from your terminal:
@@ -81,9 +82,9 @@ heroku config:set S3_BUCKET_REGION=us-east-1 --app YOURAPPNAME
 
 This repository is a [Node.js](https://nodejs.org) web application that specifies Ghost as a dependency, and makes a deploy button available.
 
-  * Ghost and Casper theme versions are declared in the Node app's [`package.json`](package.json)
-  * Versions are locked and managed using [yarn](https://yarnpkg.com)
-  * Scales across processor cores in larger dynos via [Node cluster API](https://nodejs.org/dist/latest-v10.x/docs/api/cluster.html)
+- Ghost and Casper theme versions are declared in the Node app's [`package.json`](package.json)
+- Versions are locked and managed using [npm](https://www.npmjs.com/)
+- Scales across processor cores in larger dynos via [Node cluster API](https://nodejs.org/dist/latest-v10.x/docs/api/cluster.html)
 
 ## Updating source code
 
@@ -115,23 +116,23 @@ See more about [deploying to Heroku with git](https://devcenter.heroku.com/artic
 
 ### Upgrading Ghost
 
-This repository locks Ghost to the "last tested good version" using the standard `yarn.lock` file. If you want to upgrade Ghost on your own,
+This repository locks Ghost to the "last tested good version" using the standard `package-lock.json` file. If you want to upgrade Ghost on your own,
 you will need to clone or fork this repo as described above. You will then be able to run:
 
 ```bash
-yarn upgrade ghost
-git add package.json yarn.lock
+npm upgrade ghost
+git add package.json package-lock.json
 git commit -m 'Update dependencies'
 git push heroku master
 ```
 
-If you're worried about packages beyond the root `ghost` server being outdated, you can check using `yarn outdated`.
+If you're worried about packages beyond the root `ghost` server being outdated, you can check using `npm outdated`.
 
 ## Problems?
 
 If you have problems using your instance of Ghost, you should check the [official documentation](http://support.ghost.org/) or
 open an issue on [the official issue tracker](https://github.com/TryGhost/Ghost/issues). If you discover an issue with the
-deployment process provided by *this repository*, then [open an issue here](https://github.com/snathjr/ghost-on-heroku).
+deployment process provided by _this repository_, then [open an issue here](https://github.com/snathjr/ghost-on-heroku).
 
 ## License
 
