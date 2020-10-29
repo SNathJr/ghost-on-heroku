@@ -2,10 +2,12 @@
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _require = require('webdav'),
+    createClient = _require.createClient;
+
 var Buffer = require('buffer').Buffer;
 var BaseAdapter = require('ghost-storage-base');
 var Promise = require('bluebird');
-var createClient = require('webdav');
 var debug = require('debug')('webdav');
 var fs = require('fs');
 var path = require('path');
@@ -43,9 +45,12 @@ class WebDavAdapter extends BaseAdapter {
     if (!config.url && !process.env.WEBDAV_SERVER_URL) {
       throw new Error('A URL to the WebDAV server is required.');
     }
-    this.client = createClient(config.url || process.env.WEBDAV_SERVER_URL, config.username || process.env.WEBDAV_USERNAME, config.password || process.env.WEBDAV_PASSWORD);
-    this.pathPrefix = config.pathPrefix || process.env.WEBDAV_PATH_PREFIX || '';
-    this.storagePathPrefix = config.storagePathPrefix || process.env.WEBDAV_STORAGE_PATH_PREFIX || '/content/images';
+    this.client = createClient(process.env.WEBDAV_SERVER_URL || config.url, {
+      'password': process.env.WEBDAV_PASSWORD || config.password,
+      'username': process.env.WEBDAV_USERNAME || config.username
+    });
+    this.pathPrefix = process.env.WEBDAV_PATH_PREFIX || config.pathPrefix || '';
+    this.storagePathPrefix = process.env.WEBDAV_STORAGE_PATH_PREFIX || config.storagePathPrefix || '/content/images';
   }
 
   /**
@@ -78,12 +83,13 @@ class WebDavAdapter extends BaseAdapter {
 
   /**
    *
-   * @param {string} targetDir
+   * @param {string} targetPath
    * @private
    */
-  ensureDir_(targetDir) {
+  ensureDir_(targetPath) {
     var _this2 = this;
 
+    var targetDir = path.dirname(targetPath);
     var directories = path.relative(this.pathPrefix, targetDir).split(path.sep);
     var self = this;
     var dirPath = this.pathPrefix;
@@ -123,18 +129,49 @@ class WebDavAdapter extends BaseAdapter {
     var dirPath = path.join(this.pathPrefix, targetDir);
     debug(`save - ${dirPath} - ${JSON.stringify(image)}`);
     return new Promise(function (resolve, reject) {
-      Promise.all([_this3.getUniqueFileName(image, dirPath), readFileAsync(image.path), _this3.ensureDir_(dirPath)]).then(function (_ref) {
+      Promise.all([readFileAsync(image.path), _this3.getUniqueFileName(image, dirPath)]).then(function (_ref) {
         var _ref2 = _slicedToArray(_ref, 2),
-            filename = _ref2[0],
-            data = _ref2[1];
+            data = _ref2[0],
+            filename = _ref2[1];
 
-        _this3.client.putFileContents(filename, data).then(function () {
-          var uri = path.join(_this3.storagePathPrefix, path.relative(_this3.pathPrefix, filename));
-          debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${uri}`);
-          resolve(uri);
-        });
+        return _this3.saveRaw(data, filename);
+      }).then(function (uri) {
+        debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${uri}`);
+        resolve(uri);
       }).catch(function (error) {
         debug(`save - ${dirPath} - ${JSON.stringify(image)}: ${error}`);
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * Write the image to storage, ensuring that the path to the image stats with the
+   * prefix and that the target directory exists. The existance of `saveRaw` enables
+   *  Ghost's automatic responsive images.
+   *
+   * @param {*} data
+   * @param {string} targetPath
+   * @returns {Promise.<string>}
+   * @memberof WebDavAdapter
+   */
+  saveRaw(data, targetPath) {
+    var _this4 = this;
+
+    debug(`saveRaw - ${JSON.stringify(this)} - ${targetPath}`);
+    if (!targetPath.startsWith(this.pathPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      targetPath = path.join(this.pathPrefix, targetPath);
+    }
+    return new Promise(function (resolve, reject) {
+      _this4.ensureDir_(targetPath).then(function () {
+        return _this4.client.putFileContents(targetPath, data);
+      }).then(function () {
+        var uri = path.join(_this4.storagePathPrefix, path.relative(_this4.pathPrefix, targetPath));
+        debug(`saveRaw - ${targetPath}: ${uri}`);
+        resolve(uri);
+      }).error(function (error) {
+        debug(`saveRaw - ${targetPath}: ${error}`);
         reject(error);
       });
     });
@@ -145,12 +182,12 @@ class WebDavAdapter extends BaseAdapter {
    * @returns {function(*, *, *)}
    */
   serve() {
-    var _this4 = this;
+    var _this5 = this;
 
     return function (req, res, next) {
-      var filename = path.join(_this4.pathPrefix, req.path);
+      var filename = path.join(_this5.pathPrefix, req.path);
       debug(`serve - ${filename}`);
-      _this4.client.createReadStream(filename).on('error', function (error) {
+      _this5.client.createReadStream(filename).on('error', function (error) {
         debug(`serve - ${filename}: ${error}`);
         res.status(404);
         next(error);
@@ -165,14 +202,14 @@ class WebDavAdapter extends BaseAdapter {
    * @returns {Promise.<boolean>}
    */
   delete(filename) {
-    var _this5 = this;
+    var _this6 = this;
 
     var targetDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.getTargetDir();
 
     return new Promise(function (resolve) {
-      var filePath = path.join(_this5.pathPrefix, targetDir, filename);
+      var filePath = path.join(_this6.pathPrefix, targetDir, filename);
       debug(`delete - ${filePath}`);
-      _this5.client.deleteFile(filePath).then(function () {
+      _this6.client.deleteFile(filePath).then(function () {
         debug(`delete - ${filePath}: true`);
         resolve(true);
       }).catch(function () {
@@ -188,7 +225,7 @@ class WebDavAdapter extends BaseAdapter {
    * @returns {Promise.<*>}
    */
   read() {
-    var _this6 = this;
+    var _this7 = this;
 
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -196,7 +233,7 @@ class WebDavAdapter extends BaseAdapter {
     options.path = path.join(this.pathPrefix, options.path);
     return new Promise(function (resolve, reject) {
       debug(`read - ${JSON.stringify(options)}`);
-      _this6.client.getFileContents(options.path, options).then(function (arrayBuffer) {
+      _this7.client.getFileContents(options.path, options).then(function (arrayBuffer) {
         var buffer = Buffer.from(arrayBuffer);
         if (debug.enabled) {
           var tmpPath = `/tmp/${path.basename(options.path)}`;
