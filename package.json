@@ -1,14 +1,14 @@
 {
   "name": "ghost-on-heroku",
-  "description": "Just a blogging platform on Heroku.",
+  "description": "Just a blogging platform on Heroku, set up for DemocracyLab.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/snathjr/ghost-on-heroku.git"
+    "url": "git://github.com/DemocracyLab/ghost-on-heroku.git"
   },
   "bugs": "https://github.com/TryGhost/Ghost/issues",
   "private": true,
-  "version": "3.2.0",
+  "version": "3.42.0",
   "dependencies": {
     "attila": "github:zutrinken/attila#1.13.0",
     "bleak": "github:zutrinken/bleak#1.4.0",
