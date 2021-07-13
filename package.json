@@ -8,29 +8,28 @@
   },
   "bugs": "https://github.com/TryGhost/Ghost/issues",
   "private": true,
-  "version": "3.2.0",
+  "version": "4.9.3",
   "dependencies": {
-    "attila": "github:zutrinken/attila#1.13.0",
-    "bleak": "github:zutrinken/bleak#1.4.0",
-    "casper": "github:tryghost/Casper#3.0.4",
-    "ghost": "^3.2.0",
+    "attila": "github:zutrinken/attila#3.1.0",
+    "bleak": "github:zutrinken/bleak#1.6.0",
+    "casper": "github:tryghost/casper#v4.1.0",
+    "ghost": ">=4.9.3",
     "ghost-storage-adapter-s3": "^2.8.0",
-    "ghost-storage-cloudinary": "^2.0.2",
-    "ghost-webdav-storage-adapter": "^0.3.5",
-    "london": "github:tryghost/london#1.0.0",
+    "ghost-storage-cloudinary": "^2.1.5",
+    "ghost-webdav-storage-adapter": ">0.3.5",
     "massively": "github:tryghost/massively#1.0.2",
-    "mysql": "^2.17.1",
-    "the-shell": "github:mityalebedev/The-Shell#v2.0.0",
-    "vapor": "github:sethlilly/Vapor#v1.6.0",
-    "pico": "github:tryghost/pico",
-    "lyra": "github:tryghost/lyra",
-    "liebling": "github:snathjr/liebling"
+    "mysql": "^2.18.1"
+  },
+  "resolutions": {
+    "netmask": "^2.0.1",
+    "node-forge": "^0.10.0"
   },
   "engines": {
-    "node": "10.X"
+    "node": "^12.22.1 || ^14.16.1"
   },
   "scripts": {
     "start": "node server.js",
+    "preinstall": "npx npm-force-resolutions",
     "postinstall": "bash bin/copy-themes.sh && bash bin/copy-webdav-plugin.sh"
   }
 }

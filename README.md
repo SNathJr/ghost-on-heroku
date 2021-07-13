@@ -1,17 +1,20 @@
-# [Ghost 3.X](https://github.com/TryGhost/Ghost) on [Heroku](http://heroku.com)
+# [Ghost 4.X](https://github.com/TryGhost/Ghost) on [Heroku](http://heroku.com)
 
 Ghost is a free, open, simple blogging platform. Visit the project's website at <http://ghost.org>, or read the docs on <http://support.ghost.org>.
 
-[![GitHub issues](https://img.shields.io/github/issues/SNathJr/ghost-on-heroku)](https://github.com/SNathJr/ghost-on-heroku/issues)
-[![GitHub forks](https://img.shields.io/github/forks/SNathJr/ghost-on-heroku)](https://github.com/SNathJr/ghost-on-heroku/network)
-[![GitHub stars](https://img.shields.io/github/stars/SNathJr/ghost-on-heroku)](https://github.com/SNathJr/ghost-on-heroku/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/intra-sh/ghost-on-heroku)](https://github.com/intra-sh/ghost-on-heroku/issues)
+[![GitHub forks](https://img.shields.io/github/forks/intra-sh/ghost-on-heroku)](https://github.com/intra-sh/ghost-on-heroku/network)
+[![GitHub stars](https://img.shields.io/github/stars/intra-sh/ghost-on-heroku)](https://github.com/intra-sh/ghost-on-heroku/stargazers)
 [![Deploy to Heroku](https://img.shields.io/badge/deploy%20to-heroku-6762a6)](https://heroku.com/deploy)
 
 ## Disclaimer
+This is a fork of:
+- https://github.com/SNathJr/ghost-on-heroku which in turn is a fork of:
+- https://github.com/cobyism/ghost-on-heroku
 
-This is a fork with some improvements from https://github.com/cobyism/ghost-on-heroku. I have forked and improved this repository as the original developer seemed to have abandoned his repo recently. In this repository I have upgraded ghost to ghost 3.X and added cloudinary as a free storage alternative to amazon's s3. If you are still interested with the ghost 1.0 version please visit the original repository.
+I have forked and improved this repository as the original developer seemed to have abandoned his repo recently. In this repository I have upgraded ghost to ghost 4.X. If you are still interested with the ghost 3.x (SNathJr) or 1.0 (cobyism) version please visit the respective repository.
 
-## Ghost version 3.X
+## Ghost version 4.X
 
 The latest release of Ghost is now supported! Changes include:
 
